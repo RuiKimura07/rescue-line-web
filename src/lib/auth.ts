@@ -55,8 +55,9 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === 'line') {
         // LINE特有の処理
         try {
+          const lineProfile = profile as any
           const existingUser = await prisma.user.findUnique({
-            where: { lineUserId: profile?.userId },
+            where: { lineUserId: lineProfile?.userId },
           })
 
           if (existingUser) {
@@ -64,8 +65,8 @@ export const authOptions: NextAuthOptions = {
             await prisma.user.update({
               where: { id: existingUser.id },
               data: {
-                name: profile?.displayName,
-                image: profile?.pictureUrl,
+                name: lineProfile?.displayName,
+                image: lineProfile?.pictureUrl,
               },
             })
           } else {
@@ -73,7 +74,7 @@ export const authOptions: NextAuthOptions = {
             await prisma.user.update({
               where: { id: user.id },
               data: {
-                lineUserId: profile?.userId,
+                lineUserId: lineProfile?.userId,
               },
             })
           }

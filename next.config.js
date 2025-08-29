@@ -18,28 +18,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on'
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY'
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
-          }
-        ],
-      },
-      {
-        source: '/fonts/(.*)',
+        source: '/_next/static/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -48,7 +27,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/(.*\\.(js|css|woff2|png|jpg|jpeg|webp|avif|svg|ico))',
+        source: '/favicon.ico',
         headers: [
           {
             key: 'Cache-Control',

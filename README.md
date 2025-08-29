@@ -1,270 +1,197 @@
-# Gサポ | 困ったときの身近なレスキュー
+# Gサポート - Landing Page
 
-プロダクション対応のLINEログイン + Stripeサブスクリプション対応Next.js 14アプリケーション
+月額500円で30分以内にかけつける緊急駆けつけサービス「Gサポート」の公式ランディングページです。
 
 ## 🚀 技術スタック
 
-- **Frontend**: Next.js 14 (App Router) + TypeScript
-- **Authentication**: NextAuth.js + LINE OAuth/OIDC
-- **Database**: Prisma + PostgreSQL
-- **Payments**: Stripe Subscriptions (Checkout + Portal + Webhooks)
-- **Styling**: Tailwind CSS + shadcn/ui
-- **Deployment**: Render.com
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui + Radix UI
+- **Icons**: Lucide React
+- **Fonts**: Inter & Noto Sans JP
 
-## 📋 機能
+## 📱 機能
 
-### ✅ 実装済み機能
-- ✅ LINEログイン認証
-- ✅ 月額500円サブスクリプション
-- ✅ Stripe Checkout統合
-- ✅ Stripe Customer Portal
-- ✅ Webhook処理 (サブスクリプション状態同期)
-- ✅ レスポンシブUI
-- ✅ 法的ページ (利用規約、プライバシーポリシー、特商法)
-- ✅ マイページ (契約状況管理)
-- ✅ Render.com対応デプロイ設定
+- **レスポンシブデザイン**: モバイルファーストで全デバイス対応
+- **SEO最適化**: メタタグ、構造化データ、サイトマップ完備
+- **アクセシビリティ**: WAI-ARIA準拠、高コントラスト対応
+- **パフォーマンス**: Lighthouse 95+スコア目標
+- **多言語**: 日本語完全対応
 
-### 📁 ディレクトリ構成
+## 🎨 デザインシステム
 
-```
-/
-├── README.md
-├── .env.example
-├── render.yaml                 # Render.comデプロイ設定
-├── prisma/
-│   └── schema.prisma          # データベーススキーマ
-├── public/
-│   └── logo.svg              # ロゴプレースホルダー
-├── src/
-│   ├── app/                  # Next.js App Router
-│   │   ├── page.tsx          # トップページ
-│   │   ├── pricing/page.tsx  # 料金ページ
-│   │   ├── mypage/page.tsx   # マイページ
-│   │   ├── contact/page.tsx  # お問い合わせ
-│   │   ├── legal/            # 法的ページ
-│   │   └── api/              # API routes
-│   ├── components/           # UIコンポーネント
-│   ├── lib/                  # ユーティリティ
-│   └── content/              # Markdownコンテンツ
-```
+- **カラーパレット**: 青系統（Primary: Blue 500）
+- **フォント**: Inter（英数字）+ Noto Sans JP（日本語）
+- **コンポーネント**: 再利用可能なUI部品
+- **アニメーション**: スムーズなトランジション
 
-## 🛠️ セットアップ手順
+## 📄 ページ構成
 
-### 1. リポジトリのクローンと依存関係のインストール
+- `/` - メインランディングページ
+- `/contact` - お問い合わせ
+- `/legal/terms` - 利用規約（準備中）
+- `/legal/privacy` - プライバシーポリシー（準備中）
+- `/legal/tokushoho` - 特定商取引法表記（準備中）
+
+## 🛠 セットアップ
+
+### 前提条件
+
+- Node.js 18.17以降
+- npm, yarn, pnpm, またはbun
+
+### インストール
 
 ```bash
+# リポジトリをクローン
 git clone <repository-url>
 cd rescue-line-web
+
+# 依存関係をインストール
 npm install
-```
 
-### 2. 環境変数の設定
-
-`.env.example` を `.env.local` にコピーして設定:
-
-```bash
-cp .env.example .env.local
-```
-
-### 3. LINE Developers設定
-
-1. [LINE Developers Console](https://developers.line.biz/) でチャネル作成
-2. チャネル基本設定:
-   - チャネルタイプ: LINEログイン
-   - アプリタイプ: ウェブアプリ
-3. LINEログイン設定:
-   - コールバックURL: `http://localhost:3000/api/auth/callback/line`
-   - スコープ: `profile` `openid`
-4. 取得した情報を環境変数に設定:
-   ```env
-   LINE_CLIENT_ID=your-channel-id
-   LINE_CLIENT_SECRET=your-channel-secret
-   LINE_REDIRECT_URI=http://localhost:3000/api/auth/callback/line
-   ```
-
-### 4. Stripe設定
-
-1. [Stripe Dashboard](https://dashboard.stripe.com/) でアカウント作成
-2. テスト用APIキーを取得:
-   ```env
-   STRIPE_SECRET_KEY=sk_test_...
-   STRIPE_PUBLISHABLE_KEY=pk_test_...
-   ```
-3. Productとして「Gサポ ベーシックプラン」を作成:
-   - 名前: Gサポ ベーシックプラン
-   - 料金: ¥500/月
-   - 課金周期: 月次
-4. Price IDを環境変数に設定:
-   ```env
-   STRIPE_PRICE_ID=price_...
-   ```
-5. Webhookエンドポイント設定:
-   - URL: `https://yourdomain.com/api/stripe/webhook`
-   - イベント選択:
-     - `customer.subscription.created`
-     - `customer.subscription.updated`
-     - `customer.subscription.deleted`
-     - `invoice.payment_succeeded`
-     - `invoice.payment_failed`
-   - Signing Secretを環境変数に設定:
-     ```env
-     STRIPE_WEBHOOK_SECRET=whsec_...
-     ```
-6. Customer Portal設定:
-   - 設定 → Customer Portal
-   - 基本設定を有効化
-   - 利用可能な機能を設定 (サブスクリプションのキャンセル/再開等)
-
-### 5. データベース設定
-
-ローカル開発用PostgreSQL:
-
-```bash
-# Dockerを使用する場合
-docker run --name postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=rescue_line_web -p 5432:5432 -d postgres:15
-
-# DATABASE_URLを設定
-DATABASE_URL="postgresql://postgres:password@localhost:5432/rescue_line_web"
-
-# Prisma設定
-npx prisma migrate dev
-npx prisma generate
-```
-
-### 6. その他の環境変数
-
-```env
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your-random-secret
-
-# 会社情報（法的ページで使用）
-COMPANY_NAME="あなたの会社名"
-COMPANY_ADDRESS="あなたの住所"
-COMPANY_REPRESENTATIVE="代表者名"
-COMPANY_EMAIL="support@yourdomain.com"
-COMPANY_PHONE="03-xxxx-xxxx"
-REFUND_POLICY_NOTE="返金ポリシーの詳細"
-```
-
-## 🏃‍♂️ 開発サーバー起動
-
-```bash
+# 開発サーバー起動
 npm run dev
 ```
 
-http://localhost:3000 でアクセス
+開発サーバーが起動したら [http://localhost:3000](http://localhost:3000) でアクセスできます。
 
-## 🧪 テスト
+### ビルド
 
 ```bash
-# ユニットテスト
-npm run test
+# プロダクションビルド
+npm run build
 
-# E2Eテスト
-npm run test:e2e
+# ビルドをローカルで確認
+npm run start
+
+# 型チェック
+npm run type-check
+
+# Lint
+npm run lint
 ```
 
-## 🚀 Render.comデプロイ
-
-### 1. Render.comアカウント作成
-
-1. [Render.com](https://render.com) でアカウント作成
-2. GitHubリポジトリと連携
-
-### 2. デプロイ設定
-
-1. New → Web Service
-2. Connect Repository: このリポジトリを選択
-3. 設定は `render.yaml` に記載済みのため自動設定
-4. または手動設定の場合:
-   - Build Command: `npm ci && npx prisma generate && npm run build`
-   - Start Command: `npm run start`
-   - Environment: Node
-
-### 3. PostgreSQLデータベース作成
-
-1. New → PostgreSQL
-2. Database Name: `rescue-line-postgres`
-3. Plan: Starter (開発用)
-
-### 4. 環境変数設定
-
-Render.comダッシュボードで以下を設定:
+## 📂 プロジェクト構造
 
 ```
-NEXTAUTH_URL=https://your-app-name.onrender.com
-DATABASE_URL=[自動生成されたPostgreSQL接続文字列]
-LINE_CLIENT_ID=your-line-client-id
-LINE_CLIENT_SECRET=your-line-client-secret
-LINE_REDIRECT_URI=https://your-app-name.onrender.com/api/auth/callback/line
-STRIPE_SECRET_KEY=sk_live_... (本番用)
-STRIPE_PUBLISHABLE_KEY=pk_live_... (本番用)
-STRIPE_PRICE_ID=price_... (本番用Price ID)
-STRIPE_WEBHOOK_SECRET=whsec_... (本番用Webhook Secret)
+src/
+├── app/                    # App Router
+│   ├── globals.css        # グローバルスタイル
+│   ├── layout.tsx         # ルートレイアウト
+│   ├── page.tsx           # メインページ
+│   ├── sitemap.ts         # サイトマップ
+│   ├── robots.ts          # robots.txt
+│   ├── contact/           # お問い合わせページ
+│   └── legal/             # 法的ページ群
+├── components/            # UIコンポーネント
+│   ├── ui/               # shadcn/ui基本コンポーネント
+│   ├── Logo.tsx          # ロゴコンポーネント
+│   ├── CTAButtons.tsx    # CTAボタン
+│   ├── Feature.tsx       # 機能紹介カード
+│   ├── Steps.tsx         # ステップ表示
+│   └── FAQ.tsx           # FAQ
+└── lib/
+    └── utils.ts          # ユーティリティ関数
+
+public/
+├── logo.svg              # ロゴファイル
+├── og.jpg                # OGイメージ（要交換）
+├── area-map.jpg          # エリアマップ（要交換）
+└── favicon.ico           # ファビコン（要交換）
 ```
 
-### 5. 本番用設定更新
+## 🎯 固定コピー要件
 
-**LINE Developers:**
-- コールバックURL追加: `https://your-app-name.onrender.com/api/auth/callback/line`
+以下のテキストは**必須**で、変更してはいけません：
 
-**Stripe:**
-- Webhook URL更新: `https://your-app-name.onrender.com/api/stripe/webhook`
+- **H1**: "Gサポート"
+- **H2**: "月額500円 30分以内にかけつける。もし間に合わなければ1000円お支払いします。何回でも。"
 
-## 🔄 動作確認チェックリスト
+## 📊 SEO設定
 
-### ローカル環境での確認
+- メタタグ最適化済み
+- 構造化データ（JSON-LD）実装
+- OpenGraph + Twitter Cards対応
+- サイトマップ + robots.txt
+- 適切なalt属性とaria-label
 
-- [ ] LINEログインができる
-- [ ] 料金ページでStripe Checkoutが起動する
-- [ ] 決済完了後にマイページに反映される
-- [ ] マイページでPortalにアクセスできる
-- [ ] Portalで解約→Webhookでマイページ更新
-- [ ] 法的ページが表示される
-- [ ] お問い合わせページが機能する
+## ♿ アクセシビリティ
 
-### 本番環境での確認
+- セマンティックHTML使用
+- ARIA属性適切に設定
+- キーボードナビゲーション対応
+- 高コントラスト確保
+- スクリーンリーダー対応
 
-- [ ] 本番ドメインでLINEログインが動作
-- [ ] 本番Stripe決済が正常動作
-- [ ] Webhookが正しく処理される
-- [ ] HTTPSでセキュアアクセス
-- [ ] パフォーマンスが適切
+## 🚀 パフォーマンス最適化
 
-## 📝 カスタマイズ
+- 画像最適化（WebP/AVIF対応）
+- フォント最適化（display: swap）
+- CLS（Cumulative Layout Shift）対策
+- 適切なキャッシュヘッダー
+- 圧縮有効化
 
-### ロゴ変更
-`public/logo.svg` を差し替えるだけで全体に反映
+## 🔧 カスタマイズ
 
-### 会社情報変更
-環境変数の `COMPANY_*` 項目を更新
+### 色の変更
 
-### 法的ページ編集
-`src/content/` 内のマークdownファイルを編集
+`tailwind.config.ts`で色設定を変更：
 
-### デザインカスタマイズ
-- `src/app/globals.css`: カラーテーマ
-- `tailwind.config.js`: Tailwind設定
-- `src/components/`: 各コンポーネント
+```typescript
+colors: {
+  primary: {
+    DEFAULT: 'hsl(var(--primary))',
+    foreground: 'hsl(var(--primary-foreground))',
+  },
+  // ...
+}
+```
 
-## 🛡️ セキュリティ考慮事項
+### 新しいコンポーネント追加
 
-- NextAuth.jsによるセキュアな認証
-- Stripe Webhookの署名検証
-- HTTPS強制 (本番環境)
-- CORS設定
-- 環境変数による機密情報管理
+```bash
+# shadcn/uiコンポーネント追加
+npx shadcn-ui@latest add [component-name]
+```
 
-## 📞 サポート
+## 📱 必要な置き換え作業
 
-技術的な質問やバグ報告は以下まで:
-- Issues: GitHubリポジトリのIssuesページ
-- Email: お問い合わせページから
+プロダクション前に以下を実際のファイルに置き換えてください：
 
-## 📄 ライセンス
+1. `public/og.jpg` - OGイメージ (1200x630px)
+2. `public/area-map.jpg` - サービスエリアマップ
+3. `public/favicon.ico` - ファビコン
+4. プレースホルダーURLの更新：
+   - LINE URL: `https://line.me/ti/p/placeholder`
+   - 電話番号: `tel:+81-XX-XXXX-XXXX`
+   - ドメイン: `https://g-support.example.com`
 
-このプロジェクトは [MIT License](LICENSE) の下で配布されています。
+## 📋 チェックリスト
+
+- [x] レスポンシブデザイン実装
+- [x] SEO設定完了
+- [x] アクセシビリティ対応
+- [x] パフォーマンス最適化
+- [x] 固定コピー要件対応
+- [x] 10セクション構成
+- [x] 法的ページ準備
+- [ ] 実際の画像素材置き換え
+- [ ] 本番URL設定
+- [ ] 法的文書内容追加
+
+## 🤝 開発フロー
+
+1. `main`ブランチから新しいブランチを作成
+2. 変更を加えてコミット
+3. プルリクエストを作成
+4. レビュー後、`main`にマージ
+
+## 📞 お問い合わせ
+
+技術的な質問や改善提案があればイシューを作成してください。
 
 ---
 
-**Gサポ** - 困ったときの身近なレスキュー
+**Gサポート** - 月額500円で30分以内にかけつける緊急駆けつけサービス

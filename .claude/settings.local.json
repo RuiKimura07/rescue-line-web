@@ -5,7 +5,8 @@
       "mcp__serena__read_file",
       "mcp__serena__write_memory",
       "mcp__serena__execute_shell_command",
-      "mcp__serena__replace_regex"
+      "mcp__serena__replace_regex",
+      "mcp__serena__replace_symbol_body"
     ],
     "deny": [],
     "ask": []
